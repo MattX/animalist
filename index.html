@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang='en'>
+
+<head>
+    <meta charset=utf-8>
+    <title>list animals until failure</title>
+    <meta name=description content="hot new brain workout">
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <style>
+
+html {color-scheme: light dark;}
+@media (prefers-color-scheme: light) {
+  html {
+    --background-color: #eee;
+    --foreground-color: #555;
+    --confetti-color: #337;
+    --modal-background-color: #ddd;
+    --urgent-color-1: #e93;
+    --urgent-color-2: #c11
+  }
+}
+@media (prefers-color-scheme: dark) {
+  html {
+    --background-color: #555;
+    --foreground-color: #eee;
+    --confetti-color: #99e;
+    --modal-background-color: #666;
+    --urgent-color-1: #e93;
+    --urgent-color-2: #c11;
+  }
+}
+
+body {
+    text-align: center;
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Byrose Sans,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+}
+
+h1 { transition: color, 1s; }
+
+#rules {
+    max-width: 35em;
+    display: inline-block;
+    text-align: left;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 1em;
+    padding: 0.5em;
+    transform-origin: top center;
+    &[open] {
+        animation-name: wiggle;
+        animation-duration: 0.3s;
+    }
+}
+#rules summary { text-align: center; cursor: default; user-select: none;}
+#rules:not([open]) summary { cursor: help }
+
+#confetti {
+    position: relative;
+    display: inline-block;
+    pointer-events: none;
+    color: var(--confetti-color);
+    font-weight: bold;
+}
+.confetto {
+    position: absolute;
+    transition-property:        top,      left,   opacity, rotate;
+    transition-duration:        1s,       1s,     1s,      1s;
+    transition-timing-function: ease-out, linear, linear,  ease-out;
+    top: -1em; left: 0; opacity: 85%; rotate: 0;
+}
+#timer {
+    font-family: monospace;
+    font-size: 1em;
+    /* @media (prefers-reduced-motion: no-preference) { */
+        transition-property: font-size;
+        transition-duration: 1s;
+    &::after {
+        content: attr(content);
+    }
+    &[content^="0:1"] {
+        font-size: 2em;
+        color: var(--urgent-color-1);
+    }
+    &[content^="0:0"] {
+        font-size: 31vw;
+        color: var(--urgent-color-2);
+    }
+}
+
+#comment {
+    display: block;
+    min-height: 1.2em;
+    padding: 1em;
+}
+
+#guessbox[disabled] { opacity: 1; } /* Safari workaround (disabled textboxes have low opacity, which ghosts through gameoverscreen) */
+
+#log {
+    text-align: left;
+    max-width: 35em;
+    margin: auto;
+    margin-top: 1em;
+    li {
+        animation-name: bump;
+        animation-duration: 0.1s;
+        transform-origin: left center;
+    }
+}
+.abdicated {
+    list-style-type: circle;
+}
+.abdication-note {
+    font-size: small;
+    font-style: italic;
+    margin-left: 1em;
+}
+
+#settings-page {
+    position:absolute;
+    text-align: right;
+    right: 0;
+    @media (width >= 30em) { top: 0; }
+    @media (width < 30em) { bottom: 0; }
+    padding: 1em;
+    & summary { list-style: none; }
+    & label {
+        display: block;
+        margin: 0.25em;}
+}
+#gear {
+    display: inline-block;
+    font-size: xx-large;
+    user-select: none;
+    cursor: pointer;
+    transition: rotate 0.2s ease-out;
+    rotate: 0;
+    #settings-page[open] & { rotate: -22.5deg; }
+}
+#settings-page[open] {
+    border-left-style: outset;
+    @media (width >= 30em) { border-bottom-style: outset; }
+    @media (width < 30em) { border-top-style: outset; }
+    background-color: var(--modal-background-color);
+    & summary {
+        margin-bottom: 1em;
+    }
+}
+#settings-page h2 {
+    display: none;
+    position: absolute;
+    left: 1rem;
+    top: 0;
+}
+#settings-page[open] h2 {
+    display: inline;
+}
+
+#gameoverscreen {
+    display: none;
+    position: absolute;
+    animation: stand .8s;
+    animation-timing-function: cubic-bezier(.18,.89,.33,1.33);
+    background-color: var(--modal-background-color);
+    padding: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1312; /* safari ?? or must i hide guessbox? todo */
+}
+#copybutton { position: relative; }
+
+/* @media (prefers-reduced-motion: no-preference) { */
+
+    @keyframes bump {
+        0%  {margin-left: 0em;}
+        50% {margin-left: -0.2em;}
+        to  {margin-left: 0em;}
+    }
+
+    @keyframes wiggle {
+        0%  {rotate: 0;}
+        25% {rotate: 5deg;}
+        50% {rotate: -2.5deg;}
+        75% {rotate: 1.25deg;}
+        to  {rotate: 0deg;}
+    }
+
+    @keyframes stand {
+        from {rotate: x 90deg;} to {rotate: x 0deg;}
+    }
+
+
+    </style>
+    
+    <script src=lower_title_to_id.js></script>
+    <script src=id_to_title.js></script>
+    <script src=mononyms.js></script>
+    <script src=parent.js></script>
+    <script src=eggs.js></script>
+    <script>
+
+function newGame() {
+    guessed_ids = new Set()   // ids of animals guessed so far
+    abdicated_ids = new Set() // ids of animals guessed but later overridden by narrower guesses
+    guessed_id_to_li = {}     // guessed animal id → the <li> listing it
+    guessed_descendant = {}   // disallowed parent → its already-guessed descendant
+    score = 0;
+    scorespan.innerText = 0;
+    
+    startTime = undefined;
+    endTime = undefined;
+    log.innerText = '';
+    guessbox.value = '';
+    guessbox.disabled = null;
+    h1.style = null;
+    gameoverscreen.style = null;
+}
+
+// big databases:
+// LOWER_TITLE_TO_ID: lowercase title to id.
+// ID_TO_TITLE: id to sentence-case title
+// PARENT: id to parent's id
+
+function wiggle(e) {
+    e.style.animation = null;
+    e.offsetTop;
+    e.style.animation = 'wiggle 0.2s';
+}
+
+function choice(l) { return l[Math.floor(Math.random()*l.length)]; }
+
+function attempt() {
+    var guess = guessbox.value.trim().toLowerCase();
+    if (!guess) { return; }
+    
+    if (LOWER_TITLE_TO_ID[guess]) {
+        var guess_id = LOWER_TITLE_TO_ID[guess];
+        
+        // It's an animal. But does it conflict with one already guessed?
+        // It could be already guessed itself, or a parent of a guess, or a child of a guess.
+        
+        // Is it already guessed?        
+        if (guessed_ids.has(guess_id)) {
+            comment.innerText = 'Already said ' + ID_TO_TITLE[guess_id] + '.';
+            wiggle(guessed_id_to_li[guess_id]);
+            return;
+        }
+
+        // Is it an ancestor of a previous guess?
+        if (guessed_descendant[guess_id]) {
+            comment.innerText = 'Already said more specific animal: ' + ID_TO_TITLE[guessed_descendant[guess_id]];
+            wiggle(guessed_id_to_li[guessed_descendant[guess_id]]);
+            return;
+        }
+        
+        // Guess is valid.        
+        // But is it a child of a guess? If so, its parent shall abdicate, and no reward shall be dispensed.
+        var ancestor_id = PARENT[guess_id];
+        var reward = true;
+        while (PARENT[ancestor_id]) {
+            if (guessed_ids.has(ancestor_id) && !abdicated_ids.has(ancestor_id)) {
+                abdicated_ids.add(ancestor_id);
+                var li = guessed_id_to_li[ancestor_id]
+                var s = document.createElement('s');
+                s.append(li.childNodes[0]);
+                li.append(s)
+                var abdication_note = document.createElement('span');
+                abdication_note.classList.add('abdication-note');
+                abdication_note.innerHTML = 'Replaced by more specific ' + ID_TO_TITLE[guess_id];
+                guessed_id_to_li[ancestor_id].append(abdication_note);
+                guessed_id_to_li[ancestor_id].classList.add('abdicated');
+                comment.innerText = 'Replaced vaguer animal: ' + ID_TO_TITLE[ancestor_id]
+                reward = false;
+                break;
+            }
+            ancestor_id = PARENT[ancestor_id];
+        }
+        
+        if (reward) {
+            score += 1;
+            if (endTime != undefined) { grantIncrement(); }
+        }
+        
+        // Display any easter egg text for this guess.
+        var egg_message = valid_guess_egg_message(guess, guess_id);
+        if (egg_message) {
+            if (comment.innerText) { comment.innerText += "."; } 
+            comment.innerText += ' ' + egg_message;
+        }
+        
+        // Forbid this guess in the future.
+        guessed_ids.add(guess_id)
+        
+        // Forbid this guess's parents.
+        var ancestor_id = PARENT[guess_id];
+        while (PARENT[ancestor_id]) {
+            guessed_descendant[ancestor_id] = guess_id;
+            ancestor_id = PARENT[ancestor_id];
+        }
+        
+        // Create a li for the guess
+        li = document.createElement('li');
+        if (ID_TO_TITLE[guess_id].toLowerCase() == guess) {
+            li.innerText = ID_TO_TITLE[guess_id];
+        } else {
+            li.innerText = guess + ' → ' + ID_TO_TITLE[guess_id];
+        }
+        guessed_id_to_li[guess_id] = li;
+        egg_manipulate_li(li, guess, guess_id);
+        log.prepend(li);
+        
+        
+        // Update UI.
+        guessbox.value='';
+        scorespan.innerText = score;
+        
+        for (word of (guess+' '+ID_TO_TITLE[guess_id]).replace('bird','-').split(/[ -]/)) {
+            if (CSS.supports('color', word)) {
+                h1.style.color = word;
+                break;
+            }
+        }
+    } else {
+        comment.innerText = invalid_guess_egg_message(guess) || "I don't know that animal.";
+        return;
+    }
+    if (startTime == undefined) {
+        startTime = Date.now();
+        endTime = startTime + initial_time_control.value*1000;
+    }
+    updateTimer();
+}
+
+function uncomment() {
+    comment.innerText='';
+}
+
+function grantIncrement(ms) {
+    ms = ms || increment_control.value*1000;
+    if (!ms) {return;}
+    endTime += ms;
+    summonConfetto('+' + Math.floor(ms/1000), confetti);
+}
+
+function summonConfetto(text, parent) {
+    var confetto = document.createElement('span');
+    confetto.classList.add('confetto');
+    confetto.innerText = text;
+    parent.append(confetto);
+    setTimeout(()=>{confetto.remove()}, 2000);
+    setTimeout(()=>{
+        confetto.style.top = '-5em';
+        confetto.style.left = (Math.random()*4-2) + 'em';
+        confetto.style.opacity = 0;
+        confetto.style.rotate = (Math.random()**2-0.5) + 'rad';
+    },10)
+}
+
+function updateTimer() {
+    var secondsLeft;
+    if (startTime == undefined) {
+        initial_time_control.value = Math.max(1, initial_time_control.value);
+        secondsLeft = initial_time_control.value;
+    } else {
+        secondsLeft = (endTime - Date.now())/1000;
+    }
+    if (secondsLeft <= 0) {
+        endGame();
+        secondsLeft = 0;
+    }
+    //timer.innerText = 
+    timer.setAttribute('content', Math.floor(secondsLeft/60) + ":" + Math.floor(secondsLeft%60).toString().padStart(2,0));
+}
+
+setInterval(updateTimer);
+
+function emojiSummary() {
+    var summary = '';
+    /* var mononymmed_ancestors = new Set(); */
+    for (guessed_id of guessed_ids) {
+        if (abdicated_ids[guessed_id]) { continue; }
+        var ancestor_id = guessed_id;
+        while (PARENT[ancestor_id]) {
+            if (MONONYMS[ancestor_id] /* && !mononymmed_ancestors.has(ancestor_id) */) {
+                summary += choice(MONONYMS[ancestor_id]);
+                /* mononymmed_ancestors.add(ancestor_id); */
+                break;
+            }
+            ancestor_id = PARENT[ancestor_id];
+        }
+    }
+    return summary
+}
+
+function generateShareString() {
+    return 'https://rose.systems/animalist\n\n'+score+' animal'+(score!=1?'s':'')+' listed\n'+emojiSummary();
+}
+
+var shareString;
+function copyShareStringToClipboard() {
+    return navigator.clipboard.writeText(shareString)
+        .then(()=>{ summonConfetto('copied!', copybutton); })
+        .catch(()=>{ summonConfetto('error >_<"', copybutton); });
+}
+
+function endGame() {
+    shareString = generateShareString();
+    copybutton.style.display = navigator.clipboard ? null : 'none';
+    gameoverscreen.style.display = 'block';
+    guessbox.disabled = true;
+    comment.innerText = '';
+}
+
+    </script>
+</head>
+
+<body onload=newGame()>
+    <noscript>This game requires JavaScript. Or, if you've superior taste, take out a pen and paper and start listing animals.</noscript>
+    <h1 id=h1>list animals until failure</h1>
+    <details id=rules>
+        <summary>List as many animals as you can.</summary>
+        <p><b>Animals must have Wikipedia articles.</b>
+        <p><b>You have limited time, but get more time for each animal listed.</b> When the timer runs out, that's game over.
+        <p><b>No overlapping terms.</b>
+           For example, if you list “bear” and “polar bear”, you get no point (or time bonus) for the latter.
+           But you can still get a point for a second kind of bear. Order doesn't matter.
+    </details> 
+    
+    <details id=settings-page>
+        <summary title=Settings><h2>Settings</h2><span id=gear>⚙️</span></summary>
+        <label>initial time (s): <input type=number size=2 id=initial_time_control min=1 value=60></label>
+        <label>time increment (s): <input type=number size=2 id=increment_control min=0 value=6></label>
+        <button onclick="initial_time_control.value=60;increment_control.value=6">reset to defaults</button>
+    </details>
+    
+    <p>Score: <span id=scorespan>0</span></p>
+    
+    <div style=height:1.5em;>
+        <game-timer id=timer role=timer></game-timer>
+        <div id=confetti></div>
+    </div>
+    
+    <!-- Someone please explain to me why I need this wrapper element instead of applying transform:perspective(30rem) to gameoverscreen!
+         I can't just apply perspective to body bc it messes with the settings-page positioning (inconsistent in browsers; mdn notes this)-->
+    <three-dimensional style=perspective:30rem;display:block;>
+        <section id=gameoverscreen>
+            <h2>game over</h2>
+            <button id=copybutton onclick=copyShareStringToClipboard()>share emoji results</button> <button onclick=newGame()>new game</button>
+        </section>
+    </three-dimensional>
+
+    <output id=comment for=guessbox></output>
+    <input id=guessbox autofocus autocomplete=off onkeydown=if(event.key==`Enter`){attempt()} oninput=uncomment()>
+    <ul id=log role=log></ul>
+</body>
+
+<!--that's right, buddy....
+    unquoted tag attributes....
+    autonomous custom element....
+    omission of optional closing tags....
+    named element access on the Window object....
+    why, you ask?
+    because it's in the spec-->
+
+</html>
