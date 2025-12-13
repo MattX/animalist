@@ -315,7 +315,7 @@ function attempt() {
         scorespan.innerText = score;
         
         for (word of (guess+' '+ID_TO_TITLE[guess_id]).replace('bird','-').split(/[ -]/)) {
-            if (CSS.supports('color', word)) {
+            if (CSS.supports('color', word) && word!='field' && word!='canvas' && word!='mark' && word!='highlight') {
                 h1.style.color = word;
                 break;
             }
