@@ -48,7 +48,7 @@ function valid_guess_egg_message(guess, guess_id) {
     if (guess == 'featherless biped') { MONONYMS['Q15978631'] = ['𓅾']; return; }
 }
 
-function interchangability_egg_message(guess, guess_id) {
+function equivalence_egg_message(guess, guess_id) {
     
 }
 
