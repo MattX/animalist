@@ -429,6 +429,14 @@ function endGame() {
     gameoverscreen.style.display = 'block';
     guessbox.disabled = true;
     comment.innerText = '';
+    fetch(
+        "https://guestbook.rose.systems/animals",
+        {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({guesses: JSON.stringify(guesses)}),
+        }
+    )
 }
 
     </script>
