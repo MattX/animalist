@@ -60,7 +60,7 @@ function equivalence_egg_message(guess, guess_id) {
 function ancestry_egg_message(guess, descendant_id, ancestor_id) {
     if (guess=='ermine' && ancestor_id=='Q28521') { return '(In North America, ermines are also called short-tailed weasels.)'; }
     if (descendant_id==LOWER_TITLE_TO_ID['stoat'] && ancestor_id=='Q28521') { return '(Stoats are also called short-tailed weasels.)'; }
-    if (descendant_id=='Q53636' && ancestor_id==LOWER_TITLE_TO_ID['toad']) { return '(Toads are frogs.)'; }
+    if (descendant_id==LOWER_TITLE_TO_ID['toad'] && ancestor_id=='Q53636') { return '(Toads are frogs.)'; }
     if (descendant_id==LOWER_TITLE_TO_ID['tortoise'] && ancestor_id==LOWER_TITLE_TO_ID['turtle']) {
         return '(English definitions of “turtle” and “tortoise” are inconsistent and contradictory.)';
     }
