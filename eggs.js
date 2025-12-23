@@ -30,6 +30,13 @@ function invalid_guess_egg_message(guess) {
     if (guess=='zooplankton' || guess=='zooplankter' || guess=='plankter') {
         return 'Way too vague.';
     }
+    if (guess=='scabie' || guess=='scabies') {
+        var m = "Nice try, but the animal that causes scabies isn't called “a scabie”."
+        if (guesses.slice(0,-1).includes('scabie') || guesses.slice(0,-1).includes('scabies')) {
+            m += " No, really. It's from a latin word meaning scratch or itch. So it basically means “the itches”.";
+        }
+        return m;
+    }
 }
 
 function valid_guess_egg_message(guess, guess_id) {
