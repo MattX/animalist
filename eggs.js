@@ -22,6 +22,14 @@ function invalid_guess_egg_message(guess) {
     if (guess == 'xyzzy') { return 'Nothing happens.'; }
     if (guess == 'fish') { return 'Surely you can name a specific kind of fish. I believe in you!'; }
     if (guess == 'haggis' || guess == 'wild haggis') { return 'Left-footed or right-footed?'; }
+    if (guess == 'plankton') {
+        var m = "The term “plankton” actually refers to all drifting organisms lacking means to propel.";
+        if (guesses.slice(-5).includes('sponge')) { m += " I know, Spongebob lied to you."; }
+        return m;
+    }
+    if (guess=='zooplankton' || guess=='zooplankter' || guess=='plankter') {
+        return 'Way too vague.';
+    }
 }
 
 function valid_guess_egg_message(guess, guess_id) {
