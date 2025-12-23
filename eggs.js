@@ -54,7 +54,9 @@ function valid_guess_egg_message(guess, guess_id) {
 }
 
 function equivalence_egg_message(guess, guess_id) {
-    
+    if (guess_id == 'Q10856' && (guess=='dove' || guess=='pigeon') && guesses.includes('dove') && guesses.includes('pigeon')) {
+        return "Pigeons and doves are basically the same. They share a Wikipedia page.";
+    }
 }
 
 function ancestry_egg_message(guess, descendant_id, ancestor_id) {
@@ -65,6 +67,9 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
         return '(English definitions of “turtle” and “tortoise” are inconsistent and contradictory.)';
     }
     if (descendant_id=='Q206070' && ancestor_id=='Q273291') { return "Yep, coconut crabs are hermit crabs. I didn't know either."; }
+    if (ancestor_id=='Q127960' && guess=='panther') {
+        return "I assume you mean “panther” in the general sense of any big cat.";
+    }
 }
 
 function egg_manipulate_li(li, guess, guess_id) {
