@@ -85,6 +85,15 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
     if (ancestor_id=='Q127960' && guess=='panther') {
         return "I assume you mean “panther” in the general sense of any big cat.";
     }
+    if (descendant_id=='Q1861297' && ancestor_id=='Q273291') {
+        return "Yeah, there's an argument for king crabs to be considered hermit crabs. I can't blame you for disagreeing.";
+    }
+    if ((guess=='ox' || guess=='oxen') && (guesses.includes('cow') || guesses.includes('cattle') || guesses.includes('bull'))) {
+        return "An ox is just a bovine trained to pull stuff.";
+    }
+    //if (descendant_id=='Q727919' && ancestor_id=='Q83902') {
+    //    return "(Some katydids have been called long-horned grasshoppers.)";
+    //}
 }
 
 function egg_manipulate_li(li, guess, guess_id) {
