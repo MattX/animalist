@@ -227,6 +227,22 @@ h1 { transition: color, 1s; }
     to  { height: 0; }
 }
 
+#bat {
+    display: none;
+    position: absolute;
+    right: 10rem;
+    bottom: 100vh;
+    font-size: xxx-large;
+    transform-origin: bottom;
+    animation-name: roost;
+    animation-duration: 10s;
+}
+@keyframes roost {
+    5% { transform: rotateX(180deg); }
+    95% { transform: rotateX(180deg); }
+    to  { }
+}
+
     </style>
     <link rel=stylesheet href=evolution.css>
     <script src=lower_title_to_id.js></script>
@@ -256,6 +272,7 @@ function newGame() {
     gameoverscreen.style = '';
     underlay.style = '';
     spider.style = '';
+    bat.style = '';
     document.body.classList = [];
     document.body.style = null;
 }
@@ -569,6 +586,7 @@ function load() {
     <ul id=log role=log></ul>
     
     <div id=spider aria-hidden>🕷️</div>
+    <div id=bat aria-hidden>🦇</div>
     
 </body>
 
