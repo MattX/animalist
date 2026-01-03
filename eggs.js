@@ -83,6 +83,7 @@ function invalid_guess_egg_message(guess) {
         queue_trivium("To remember how to spell “anemone”, consider the etymology: the Latin <i>anemone</i>; from Greek <i>anemonē</i> meaning “wind flower” or “daughter of the wind”, from <i>anemos</i> meaning “wind”. <i>anemos</i> comes from the Proto-Indo-European root <b>*ane-</b>, loosely meaning “to breathe”. This root is used for what seems to breathe: in other words, the <i>animate</i>, which comes from <i>anima</i> (meaning living being, soul, mind, passion, courage, anger, spirit, feeling) which comes from <b>*ane-</b>. Another word that comes from anima: <b>animal</b>!");
         return "Not quite how it's spelled.";
     }
+    if (guess=='dear' && !guesses.includes('deer')) { return "Wrong spelling, dear."; }
     var h = h‌ash(guess);
     if (guess == 'hint' || h==613114319434169) {
         return choice(['Try thinking of ']) + choice(['bugs','farm animals','dinosaurs','fish. Many fish names just end in -fish']) + '.';
