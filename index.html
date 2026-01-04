@@ -87,6 +87,7 @@ h1 { transition: color, 1s; }
     transition-duration:        1s,       1s,     1s,      1s;
     transition-timing-function: ease-out, linear, linear,  ease-out;
     top: -1em; left: 0; opacity: 85%; rotate: 0;
+    pointer-events: none;
 }
 #timer {
     font-family: monospace;
@@ -187,8 +188,15 @@ h1 { transition: color, 1s; }
     transform: translateX(-50%);
     @media (prefers-contrast: more) { border-style: outset; }
 }
-#copybutton { position: relative; }
-
+#copybutton { cursor: copy; }
+#about {
+    margin-top: 1em;
+    & summary {
+        font-size: small;
+        user-select: none;
+    }
+    &:not([open]) summary { cursor: help; }
+}
 
 @keyframes bump {
     0%  {margin-left: 0em;}
@@ -601,12 +609,6 @@ function load() {
         <button onclick="initial_time_control.value=60;increment_control.value=6">reset to defaults</button>
     </details>
    
-    <!--
-    Game by <a href=https://rose.systems>Vivian Rose</a>.
-    Uses Wikipedia and Wikidata, plus a lot of hand-tuning. No LLMs involved.
-    <a href=https://rose.systems/contact>Contact Vivian</a> with bug reports, suggestions, questions, and praise.
-    -->
-    
     <p>Score: <span id=scorespan>0</span></p>
     
     <div style=height:1.5em>
@@ -620,7 +622,12 @@ function load() {
         <section id=gameoverscreen>
             <h2>game over</h2>
             <section id=trivia></section>
-            <button id=copybutton onclick=copyShareStringToClipboard()>share emoji results</button> <button onclick=newGame()>new game</button>
+            <button id=copybutton onclick=copyShareStringToClipboard()>share emoji results</button> <button onclick=newGame()>try again</button>
+            <details id=about><summary>about this game</summary>
+                <p>By <a href=https://rose.systems>Vivian Rose</a>.
+                <p>Uses Wikipedia and Wikidata, plus a lot of hand-tuning. No LLMs involved.
+                <p><a href=https://rose.systems/contact>Contact Vivian</a> with bug reports, questions, suggestions, and praise.
+            </details>
         </section>
     </three-dimensional>
     
