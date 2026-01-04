@@ -179,6 +179,9 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
     if (descendant_id=='Q186946' && ancestor_id=='Q132379' && guesses.includes('dung beetle')) {
         return "(idk, some dung beetles are scarabs and some scarabs are dung beetles)";
     }
+    if (descendant_id=='Q221612' && ancestor_id=='Q9482') {
+        return "(Groundhogs are marmots, which are ground squirrels, which are squirrels.)";
+    }
     //if (descendant_id=='Q727919' && ancestor_id=='Q83902') {
     //    return "(Some katydids have been called long-horned grasshoppers.)";
     //}
