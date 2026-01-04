@@ -324,7 +324,7 @@ function appendp(element, text) {
 
 function attempt() {
     var verbatim_guess = guessbox.value;
-    var guess = guessbox.value.trim().toLowerCase().replaceAll("-"," ").replaceAll('’',"'")
+    var guess = guessbox.value.trim().toLowerCase().replaceAll("-"," ").replaceAll('’',"'").replaceAll(/ +/g, ' ');
     if (!guess) { return; }
     guesses.push(guess);
     console.log(guess);
