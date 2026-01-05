@@ -157,6 +157,7 @@ function equivalence_egg_message(guess, guess_id) {
         queue_trivium_once("You might argue this game should interpret “bison” as <a href=https://en.wikipedia.org/wiki/Bison><i>Bison bison</i>, aka the American buffalo</a>, and interpret “buffalo” as <a href=https://en.wikipedia.org/wiki/True_buffalo><i>true</i> buffalo</a>, but since the American (and <a href=https://en.wikipedia.org/wiki/European_bison>European</a>) bison are colloquially known as “buffalo”, I think it's fair to treat them as interchangable terms. So anyone wanting points for buffalo has to name a specific one, like the African buffalo or dwarf buffalo or water buffalo.");
         return "Sorry, but “buffalo” and “bison” have been interchanged for centuries.";
     }
+    // todo dog breed snark
 }
 
 function ancestry_egg_message(guess, descendant_id, ancestor_id) {
@@ -220,6 +221,33 @@ function queue_final_trivia() {
     if (guessed_ids.includes('Q26972265') && guessed_ids.includes('Q38584')) {
         queue_trivium("You listed both dingos and dogs, so I gave you the benefit of the doubt, but <a href=https://en.wikipedia.org/wiki/Dingo#Taxonomy>there's disagreement on whether the dingo is its own species of canid, a subspecies of grey wolf, or simply a breed of dog.</a>");
     }
+    if (!trivia.innerText && Math.random() < .5) {
+        try_queue_pic_for(guessed_ids[guessed_ids.length-1]);
+    }
+}
+
+function try_queue_pic_for(guess_id) {
+    let pics = ID_TO_PICS[guess_id];
+    if (pics) {
+        queue_pic(choice(pics));
+        return 1;
+    }
+}
+
+function queue_pic(pic) {
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    details.append(summary);
+    summary.innerText = 'Photo of ' + (pic.title || pic.alt)
+    const img = document.createElement('img');
+    img.setAttribute('src', pic.src);
+    img.setAttribute('alt', pic.alt);
+    details.append(img);
+    const p = document.createElement('p');
+    p.innerHTML = pic.artist.attribution;
+    details.append(p);
+    details.classList.add('pic');
+    trivia.append(details);
 }
 
 const {now:hash} = Date;

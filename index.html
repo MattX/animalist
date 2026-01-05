@@ -42,6 +42,8 @@ html {color-scheme: light dark;}
   }
 }
 
+img { max-width: 100%; }
+
 body {
     text-align: center;
     background-color: var(--background-color);
@@ -197,6 +199,9 @@ h1 { transition: color, 1s; }
     }
     &:not([open]) summary { cursor: help; }
 }
+.pic {
+    margin-bottom: 1em;
+}
 
 @keyframes bump {
     0%  {margin-left: 0em;}
@@ -296,6 +301,7 @@ snail-race {
     <script src=mononyms.js></script>
     <script src=parent.js></script>
     <script src=eggs.js></script>
+    <script src=pics.js></script>
     <script>
 
 function newGame() {
