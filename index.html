@@ -417,7 +417,7 @@ function attempt() {
                 li.append(s)
                 var abdication_note = document.createElement('span');
                 abdication_note.classList.add('abdication-note');
-                abdication_note.innerHTML = 'Replaced by more specific ' + ID_TO_TITLE[guess_id];
+                abdication_note.innerHTML = ' Replaced by more specific ' + ID_TO_TITLE[guess_id];
                 guessed_id_to_li[ancestor_id].append(abdication_note);
                 guessed_id_to_li[ancestor_id].classList.add('abdicated');
                 comment.innerText = 'Replaced vaguer animal: ' + ID_TO_TITLE[ancestor_id]
