@@ -281,3 +281,13 @@ function h‌ash(str) {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 };
 
+// https://www.celestialprogramming.com/snippets/moonage.html
+const DAYS_PER_LUNAR_MONTH = 29.530588853;
+function moonAge() {
+    let jd = Date.now() / 86400000 + 2440587.5
+    let f=((jd-2451550.1)/DAYS_PER_LUNAR_MONTH)%1;
+    f=(f<0) ? f+1:f;
+    return f*DAYS_PER_LUNAR_MONTH;
+}
+function isMoonFull() { return moonAge < DAYS_PER_LUNAR_MONTH+1 && moonAge > DAYS_PER_LUNAR_MONTH-1; }
+LOWER_TITLE_TO_ID.werewolf = isMoonFull() ? LOWER_TITLE_TO_ID.wolf : LOWER_TITLE_TO_ID.human;
