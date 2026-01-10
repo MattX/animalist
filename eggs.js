@@ -65,8 +65,6 @@ function invalid_guess_egg_message(guess) {
     }
     if (guess == 'xyzzy') { return 'Nothing happens.'; }
     if (guess == 'fish') { return 'Surely you can name a specific kind of fish. I believe in you!'; }
-    if (guess == 'shellfish') { return "That's more of a culinary term. Try naming a specific shellfish."; }
-    if (guess == 'haggis' || guess == 'wild haggis') { return 'Left-footed or right-footed?'; }
     if (guess == 'plankton') {
         queue_trivium("<a href=https://en.wikipedia.org/wiki/Plankton>read about plankton</a>");
         var m = "The term “plankton” actually refers to all drifting organisms lacking means to propel.";
@@ -88,7 +86,12 @@ function invalid_guess_egg_message(guess) {
     if (guess=='softshell crab' || guess=='soft shell crab' || guess=='soft shelled crab' || guess=='softshelled crab') {
         queue_trivium("You mentioned <a href=https://en.wikipedia.org/wiki/Soft-shell_crab>softshell crab</a>, and that got me thinking: I think it's one of the worst meats, morally. Like I'm not even vegan but imagine you get caught by a giant and she puts you in a jail cell with a shower. Eventually you decide to take a shower, and then the giant is like, “hey great, your clothes are off, now I don't have to bother shucking them!” And then puts you on a shelf for someone to buy, and then someone buys you and cooks you WHILE YOU'RE NAKED. So undignified");
         return "That's a culinary term for any crab killed while vulnerable from a recent molt.";
-
+    }
+    if (guess == 'shellfish') { return "That's more of a culinary term. Try naming a specific shellfish."; }
+    if (guess == 'kipper') { return "That's more of a culinary term; it's a herring or salmon corpse that has been split and salted."; }
+    if (guess == 'haggis' || guess == 'wild haggis') { return 'Left-footed or right-footed?'; }
+    if (guess=='pork' || guess=='ham' || guess=='beef' || guess=='steak' || guess=='mutton' || guess=='veal') {
+        return "That term only refers to the animal's corpse.";
     }
     if (/^(sea )?a[mn]e[mn]o[mn]e$/.test(guess)) {
         queue_trivium("To remember how to spell “anemone”, consider the etymology: the Latin <i>anemone</i>; from Greek <i>anemonē</i> meaning “wind flower” or “daughter of the wind”, from <i>anemos</i> meaning “wind”. <i>anemos</i> comes from the Proto-Indo-European root <b>*ane-</b>, loosely meaning “to breathe”. This root is used for what seems to breathe: in other words, the <i>animate</i>, which comes from <i>anima</i> (meaning living being, soul, mind, passion, courage, anger, spirit, feeling) which comes from <b>*ane-</b>. Another word that comes from anima: <b>animal</b>!");
@@ -100,6 +103,7 @@ function invalid_guess_egg_message(guess) {
         queue_trivium("“caterpillar” is spelled with “-pillar”, not “-piller”, but the etymology derives from the Middle English «<a href=https://en.wiktionary.org/wiki/piller#Etymology_1>piller</a>», meaning to plunder. Presumably because they eat so much.");
         return "It ends in -pillar, not -piller.";
     }
+
     if (guess=='cryptobug') { return "That's a brand name."; }
     if (guess=='mushroom') { return "No, fungi aren't animals."; }
     if (guess=='cheeta') { return "You're missing a letter."; }
@@ -211,6 +215,9 @@ function egg_manipulate_li(li, guess, guess_id) {
         setTimeout(()=>{ li.style.top=0; }, 10)
     }
     if (guess == 'sidewinder') { li.style.rotate = '-90deg'; }
+    if (guess_id = 'Q2525560') {
+        li.classList.add('wheelspider')
+    }
 }
 
 localStorage.triviaHashes ||= '';
