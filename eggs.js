@@ -52,9 +52,6 @@ function swoop() {
 }
 
 function invalid_guess_egg_message(guess) {
-    if (guess=='help') {
-        rules.open = true; return ' ';
-    }
     if (guess=='dragon' || guess == 'jackalope' || guess == 'tsuchinoko' || guess=='bigfoot' || guess=='yeti') {
         return 'Real animals only, please.';
     }
@@ -73,7 +70,7 @@ function invalid_guess_egg_message(guess) {
     if (guess=='yellowfin') { return "So many fish have yellow fins. Can you be more specific?"; }
 
     if (guess=='plankton') {
-        queue_trivium("<a href=https://en.wikipedia.org/wiki/Plankton>read about plankton</a>");
+        queue_shy_trivium("<a href=https://en.wikipedia.org/wiki/Plankton>read about plankton</a>");
         var m = "The term “plankton” actually refers to all drifting organisms lacking means to propel.";
         if (guesses.slice(-5).includes('sponge')) { m += " I know, Spongebob lied to you."; }
         return m;
@@ -94,7 +91,7 @@ function invalid_guess_egg_message(guess) {
     if (guess=='pork' || guess=='ham' || guess=='beef' || guess=='steak' || guess=='mutton' || guess=='veal') {
         return "That term only refers to the animal's corpse.";
     }
-    if (guess=='cornish game hen') { return "That's a culinary term. It's just chicken."; }
+    if (guess=='cornish game hen' || guess=='cornish hen') { return "That's a culinary term. It's just chicken."; }
 
     // Misspellings
     if (guess=='pidgeon' || guess.endsWith(' pidgeon')) {
@@ -117,9 +114,12 @@ function invalid_guess_egg_message(guess) {
     }
     if (guess=='lunar moth') { return "It's “luna”, actually."; }
     if (guess=='cheeta') { return "You're missing a letter."; }
+    if (guess=='any') { return "Any what?"; }
+    var h = h‌ash(guess);
+    if (h==7182294905658010 || h==6344346315172974) { return "Adorable guess, but it's spelled “rosy”."; }
 
     // Just not animals
-    if (guess=='algae') { return "No."; }
+    if (guess=='algae' || guess=='seaweed') { return "No."; }
     if (guess=='amoeba') {
         queue_shy_trivium("<a href=https://en.wikipedia.org/wiki/Amoeba>Learn what an amoeba is</a>");
         return "Not really a kind of animal.";
@@ -135,31 +135,38 @@ function invalid_guess_egg_message(guess) {
     }
     if (guess=='tree') { return "Animals, not plants, please."; }
     if (guess=='yeast') { return "That's fungus."; }
+    if (guess=='plant') { h1.innerText = "list ANIMALS until failure"; return ' '; }
+    if (guess=='fungus') { return "No." }
 
     if (guess=='cryptobug') { return "That's a brand name."; }
+    if (guess=='mockingjay') { return "Not actually a real bird."; }
+    if (guess=='jabberjay') { return "Come on, you know that one's fictional."; }
     if (guess=='pikachu') { return "What? No. That is a Pokémon."; }
     if (guess=='black panther') { return "Not really a distinct animal."; }
     if (guess=='kudu') { return 'Lesser or greater?'; }
     if (guess=='arctic seal') { return "Lots of seals live in the Arctic. Can you be more specific?"; }
     if (guess=='yellow butterfly') { return "Lots of butterflies are yellow. Can you be more specific?"; }
     if (guess=='green snake') { return "So many snakes are green. Which one?"; }
+    if (guess=='brown squirrel') { return "That's not really a distinct kind of squirrel."; }
     if (guess=='mantaray') { return "It's two words, actually."; }
     if (guess=='carrier pigeon' || guess=='homing pigeon' || guess=='war pigeon' || guess=='mail pigeon'
         || guess=='cleaner shrimp'
-        || guess=='worker bee'
-        || guess=='lab mouse' || guess=='laboratory mouse' || guess=='lab rat') {
+        || guess=='worker bee' || guess=='queen bee'
+        || guess=='lab mouse' || guess=='laboratory mouse' || guess=='lab rat'
+        || guess=='parasite') {
         return "That's more of an occupation, isn't it?";
     }
+    if (guess=='polyp') { return "That's more of a shape, really."; }
     if (guess=='larva') { return "Many animals have a larval stage. Can you be more specific?"; }
     if (guess=='doe') {
         //todo trivium
         return "That can actually refer to a lot of different animals.";
     }
 
-    var h = h‌ash(guess);
-    if (guess == 'hint' || h==613114319434169) {
+    if (guess=='hint' || h==613114319434169 || (guess=='help' && (guessed_ids.length || rules.open))) {
         return choice(['Try thinking of ']) + choice(['bugs','farm animals','dinosaurs','fish. Many fish names just end in -fish']) + '.';
     }
+    if (guess=='help') { rules.open = true; return ' '; }
     if (h==6386118624072996) { return "You can't fool me."; }
 }
 
@@ -261,13 +268,13 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
     if (descendant_id=='Q221612' && ancestor_id=='Q9482') {
         return "(Groundhogs are marmots, which are ground squirrels, which are squirrels.)";
     }
-    if (descendant_id=LOWER_TITLE_TO_ID.chipmunk && ancestor_id==LOWER_TITLE_TO_ID.squirrel) {
+    if (descendant_id==LOWER_TITLE_TO_ID.chipmunk && ancestor_id==LOWER_TITLE_TO_ID.squirrel) {
         return "(Chipmunks are squirrels.)";
     }
-    if (descendant_id=LOWER_TITLE_TO_ID.snail && ancestor_id==LOWER_TITLE_TO_ID.slug) {
+    if (descendant_id==LOWER_TITLE_TO_ID.snail && ancestor_id==LOWER_TITLE_TO_ID.slug) {
         return "(The snail/slug line is blurry.)";
     }
-    if (descendant_id=LOWER_TITLE_TO_ID.termite && ancestor_id==LOWER_TITLE_TO_ID.roach) {
+    if (descendant_id==LOWER_TITLE_TO_ID.termite && ancestor_id==LOWER_TITLE_TO_ID.roach) {
         return "(It's arguable, but Wikipedia calls termites “a group of detritophagous eusocial cockroaches”.)";
     }
     //if (descendant_id=='Q727919' && ancestor_id=='Q83902') {
