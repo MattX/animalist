@@ -206,6 +206,7 @@ function valid_guess_egg_message(guess, guess_id) {
         return "You probably meant cat instead of Ca (genus of moths) but whatever.";
     }
     if (guess=='pug') { return "I generously assume you mean the little brown moths called pugs."; }
+    if (guess=='parakeet') return "(“parakeet” is dialectal so I'm not sure which bird(s) you mean, exactly.)";
     if (guess=='house spider') {
         queue_trivium("The term “house spider” can refer to <a href=https://en.wikipedia.org/wiki/House_spider>multiple kinds of spider</a>, but it has <a href=extras/praiſe_of_the_houſe_Spider>a single entry in a 1600s bestiary that goes on and on about its wondrous beauty.</a>.");
     }
@@ -243,9 +244,12 @@ function equivalence_egg_message(guess, guess_id) {
     if (guess_id == 'Q10856' && (guess=='dove' || guess=='pigeon') && guesses.includes('dove') && guesses.includes('pigeon')) {
         return "Pigeons and doves are basically the same. They share a Wikipedia page.";
     }
-    if (guess_id == 'Q18099' && (guess='bison' || guess=='buffalo') && guesses.includes('bison') && guesses.includes('buffalo')) {
+    if (guess_id == 'Q18099' && (guess=='bison' || guess=='buffalo') && guesses.includes('bison') && guesses.includes('buffalo')) {
         queue_trivium_once("You might argue this game should interpret “bison” as <a href=https://en.wikipedia.org/wiki/Bison><i>Bison bison</i>, aka the American buffalo</a>, and interpret “buffalo” as <a href=https://en.wikipedia.org/wiki/True_buffalo><i>true</i> buffalo</a>, but since the American (and <a href=https://en.wikipedia.org/wiki/European_bison>European</a>) bison are colloquially known as “buffalo”, I think it's fair to treat them as interchangable terms. So anyone wanting points for buffalo has to name a specific one, like the African buffalo or dwarf buffalo or water buffalo.");
         return "Sorry, but “buffalo” and “bison” have been interchanged for centuries.";
+    }
+    if (guess=='parakeet' && guesses.includes('parrot')) {
+        return "(Sorry, “parakeet” is dialectal so I'm not sure which bird(s) you mean.)";
     }
     if (guess_id==LOWER_TITLE_TO_ID.dog && (!guesses.slice(0,-1).includes(guess) || !DOGS_IS_THE_SAME[0])) {
         if (dog_index > 3) { h1.innerText = "list animals OTHER THAN DOGS"; }
@@ -280,13 +284,16 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
         return "(Prairie dogs are ground squirrels.)";
     }
     if (descendant_id==LOWER_TITLE_TO_ID.chipmunk && ancestor_id==LOWER_TITLE_TO_ID.squirrel) {
-        return "(Chipmunks are squirrels.)";
+        return "(Yes, chipmunks are squirrels.)";
     }
     if (descendant_id==LOWER_TITLE_TO_ID.snail && ancestor_id==LOWER_TITLE_TO_ID.slug) {
         return "(The snail/slug line is blurry.)";
     }
     if (descendant_id==LOWER_TITLE_TO_ID.termite && ancestor_id==LOWER_TITLE_TO_ID.roach) {
         return "(It's arguable, but Wikipedia calls termites “a group of detritophagous eusocial cockroaches”.)";
+    }
+    if (descendant_id==LOWER_TITLE_TO_ID.rattlesnake && ancestor_id==LOWER_TITLE_TO_ID.viper) {
+        return "(Rattlesnakes are pit vipers.)";
     }
     //if (descendant_id=='Q727919' && ancestor_id=='Q83902') {
     //    return "(Some katydids have been called long-horned grasshoppers.)";
