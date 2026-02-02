@@ -295,6 +295,8 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
     if (descendant_id==LOWER_TITLE_TO_ID.rattlesnake && ancestor_id==LOWER_TITLE_TO_ID.viper) {
         return "(Rattlesnakes are pit vipers.)";
     }
+    if (descendant_id==LOWER_TITLE_TO_ID.elk && ancestor_id==LOWER_TITLE_TO_ID.deer) return "(Yes, elk are deer.)";
+    if (descendant_id==LOWER_TITLE_TO_ID.moose && ancestor_id==LOWER_TITLE_TO_ID.deer) return "(Yes, moose are deer.)";
     //if (descendant_id=='Q727919' && ancestor_id=='Q83902') {
     //    return "(Some katydids have been called long-horned grasshoppers.)";
     //}
