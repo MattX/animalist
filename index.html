@@ -638,6 +638,7 @@ function endGame() {
     cycleThank();
     shareString = generateShareString();
     copybutton.style.display = navigator.clipboard ? null : 'none';
+    discord.style.display = score > 50 ? '' : 'none';
     gameoverscreen.style.display = 'block';
     guessbox.disabled = true;
     comment.innerText = '';
@@ -705,6 +706,7 @@ function load() {
                 <p>Uses Wikipedia and Wikidata, plus a lot of hand-tuning. No LLMs involved.
                 <p><a href=https://rose.systems/contact>Contact me</a> with bug reports, questions, suggestions, and praise.
                 <p id=thank style=font-size:small></p>
+                <p id=discord>There's also <a href=https://discord.gg/vTEvrkNunZ>a fanmade Discord server</a>.</p>
             </details>
         </section>
     </three-dimensional>
