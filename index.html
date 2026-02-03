@@ -201,7 +201,7 @@ body:has(#log li) #settings-page { /* hide settings during game */
     transform: translateX(-50%);
     @media (prefers-contrast: more) { border-style: outset; }
 }
-#copybutton {
+#copybutton, #epsybutton {
     cursor: copy;
     position: relative; /* for confetti */
 }
@@ -616,12 +616,11 @@ function generateShareString() {
     return 'https://rose.systems/animalist\n'+timerDisclaimer+'\n'+score+' animal'+(score!=1?'s':'')+' listed\n'+emojiSummary();
 }
 
-var shareString;
-function copyShareStringToClipboard() {
-    if (!navigator.clipboard) { summonConfetto('error >~<"', copybutton); }
-    return navigator.clipboard.writeText(shareString)
-        .then(()=>{ summonConfetto('copied!', copybutton); })
-        .catch(()=>{ summonConfetto('error >_<"', copybutton); });
+function copyToClipboard(text, confettoTarget) {
+    if (!navigator.clipboard) { summonConfetto('error >~<"', confettoTarget); }
+    return navigator.clipboard.writeText(text)
+        .then(()=>{ summonConfetto('copied!', confettoTarget); })
+        .catch(()=>{ summonConfetto('error >_<"', confettoTarget); });
 }
 
 var thankIndex;
@@ -631,6 +630,7 @@ function cycleThank() {
     thank.innerHTML = THANKS[thankIndex];
 }
 
+var shareString;
 function endGame() {
     if (guessbox.disabled) { return; }
     navigator.vibrate && navigator.vibrate(999);
@@ -696,7 +696,9 @@ function load() {
         <section id=gameoverscreen>
             <h2>game over</h2>
             <section id=trivia></section>
-            <button id=copybutton onclick=copyShareStringToClipboard()>share emoji results</button> <button onclick=newGame()>try again</button>
+            <button id=copybutton onclick=copyToClipboard(shareString,copybutton)>copy emoji summary</button>
+            <button id=epsybutton onclick=copyToClipboard(log.innerText,epsybutton)>copy list</button>
+            <button onclick=newGame()>try again</button>
             <details id=mistakes style=display:none><summary>mistakes</summary>
                 <ul id=mistakeslog></ul>
                 <p>(If they're my fault, check Wikipedia & <a href=https://rose.systems/contact target=_blank>tell me what to fix</a>.)</p>
