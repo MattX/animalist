@@ -207,9 +207,24 @@ body:has(#log li) #settings-page { /* hide settings during game */
     cursor: copy;
     position: relative; /* for confetti */
 }
-#mistakes, #about {
+#phylogeny, #mistakes, #about {
     margin-top: 1em;
     & summary { font-size: small }
+}
+#phylogeny {
+    #treeoflife {
+        text-align: left;
+        font-size: small;
+        & ul {
+            list-style: none;
+            padding-left: 1.2em;
+            border-left: 1px solid var(--foreground-color);
+            margin: 0.2em 0;
+        }
+        & > ul { border-left: none; padding-left: 0; }
+        & li { margin: 0.2em 0; }
+        & strong { color: var(--confetti-color); }
+    }
 }
 #mistakes {
     #mistakeslog {
@@ -635,6 +650,119 @@ function emojiSummary() {
     return summary;
 }
 
+// Build and render tree of life showing guessed animals and their branching clades
+function buildTreeOfLife() {
+    // Get non-abdicated guessed IDs
+    var validIds = guessed_ids.filter(id => !abdicated_ids.has(id));
+    if (validIds.length < 2) return null;
+
+    var validSet = new Set(validIds);
+
+    // For each node, track which guessed animals are descendants
+    var descendants = {};  // node -> Set of guessed descendant IDs
+
+    // Trace ancestry for each guessed animal
+    for (var id of validIds) {
+        var curr = id;
+        while (curr) {
+            if (!descendants[curr]) descendants[curr] = new Set();
+            descendants[curr].add(id);
+            curr = PARENT[curr];
+        }
+    }
+
+    // Build children map (restricted to nodes with guessed descendants)
+    var children = {};  // node -> array of child nodes with guessed descendants
+    for (var id of validIds) {
+        var curr = id;
+        while (PARENT[curr]) {
+            var par = PARENT[curr];
+            if (!children[par]) children[par] = [];
+            if (!children[par].includes(curr) && descendants[curr]) {
+                children[par].push(curr);
+            }
+            curr = par;
+        }
+    }
+
+    // Find root: highest node with guessed descendants
+    var root = validIds[0];
+    while (PARENT[root] && descendants[PARENT[root]]) {
+        root = PARENT[root];
+    }
+
+    // Build minimal tree: only include branching nodes and leaves
+    // A node is included if it's a guessed animal OR has 2+ children with different descendant sets
+    function buildMinimalTree(nodeId) {
+        var isLeaf = validSet.has(nodeId);
+        var nodeChildren = children[nodeId] || [];
+
+        // Recursively build subtrees for children
+        var subtrees = [];
+        for (var child of nodeChildren) {
+            var subtree = buildMinimalTree(child);
+            if (subtree) subtrees.push(subtree);
+        }
+
+        if (isLeaf) {
+            // It's a guessed animal - always include
+            return { id: nodeId, children: subtrees };
+        } else if (subtrees.length >= 2) {
+            // Branching point - include
+            return { id: nodeId, children: subtrees };
+        } else if (subtrees.length == 1) {
+            // Pass-through node - skip it, return child directly
+            return subtrees[0];
+        } else {
+            return null;
+        }
+    }
+
+    return buildMinimalTree(root);
+}
+
+function renderTreeOfLife(tree) {
+    if (!tree) return null;
+
+    var li = document.createElement('li');
+    var name = ID_TO_TITLE[tree.id] || tree.id;
+    var isGuessed = guessed_ids.includes(tree.id) && !abdicated_ids.has(tree.id);
+
+    if (isGuessed) {
+        var strong = document.createElement('strong');
+        strong.textContent = name;
+        li.appendChild(strong);
+    } else {
+        li.appendChild(document.createTextNode(name));
+    }
+
+    if (tree.children && tree.children.length > 0) {
+        var ul = document.createElement('ul');
+        for (var child of tree.children) {
+            var childLi = renderTreeOfLife(child);
+            if (childLi) ul.appendChild(childLi);
+        }
+        li.appendChild(ul);
+    }
+
+    return li;
+}
+
+function displayTreeOfLife() {
+    var tree = buildTreeOfLife();
+    var container = document.getElementById('treeoflife');
+    container.innerHTML = '';
+
+    if (tree) {
+        var ul = document.createElement('ul');
+        ul.appendChild(renderTreeOfLife(tree));
+        container.appendChild(ul);
+        container.parentElement.style.display = '';
+    } else {
+        container.parentElement.style.display = 'none';
+    }
+}
+
 function generateShareString() {
     var timerDisclaimer = (initial_time_control.value!=60 || increment_control.value!=6) ? '⏱️'+initial_time_control.value+'/'+increment_control.value : '';
     var modeDisclaimer = extinct_mode ? '🦴 extinct only' : '';
@@ -660,6 +788,7 @@ function endGame() {
     if (guessbox.disabled) { return; }
     navigator.vibrate && navigator.vibrate(999);
     queue_final_trivia();
+    displayTreeOfLife();
     cycleThank();
     shareString = generateShareString();
     copybutton.style.display = navigator.clipboard ? null : 'none';
@@ -726,6 +855,9 @@ function load() {
             <button id=copybutton onclick=copyToClipboard(shareString,copybutton)>copy emoji summary</button>
             <button id=epsybutton onclick=copyToClipboard(log.innerText,epsybutton)>copy list</button>
             <button onclick=newGame()>try again</button>
+            <details id=phylogeny><summary>tree of life</summary>
+                <div id=treeoflife></div>
+            </details>
             <details id=mistakes style=display:none><summary>mistakes</summary>
                 <ul id=mistakeslog></ul>
                 <p>(If they're my fault, check Wikipedia & <a href=https://rose.systems/contact target=_blank>tell me what to fix</a>.)</p>
