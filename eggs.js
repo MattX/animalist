@@ -52,13 +52,14 @@ function swoop() {
 }
 
 function invalid_guess_egg_message(guess) {
+    if (guess=='me') return "And what are you?";
     if (guess=='dragon' || guess == 'jackalope' || guess == 'tsuchinoko' || guess=='bigfoot' || guess=='yeti') {
         return 'Real animals only, please.';
     }
     if (guess=='jumping bean') {
         return "Well, the jumping bean is the moth larva, but it's also the seed pod. So I don't think you can say that a jumping bean is itself an animal. But I'd definitely accept “jumping bean moth”.";
     }
-    if (guess=='soweli' || guess == 'waso' || guess == 'kala' || guess == 'pipi') {
+    if (guess=='soweli' || guess == 'waso' || guess == 'kala' || guess == 'pipi' || guess=='akesi') {
         return 'musi ni li sona ala e toki pona.';
     }
     if (guess=='zedonk' || guess=='zorse') {
@@ -206,6 +207,7 @@ function valid_guess_egg_message(guess, guess_id) {
         return "You probably meant cat instead of Ca (genus of moths) but whatever.";
     }
     if (guess=='pug') { return "I generously assume you mean the little brown moths called pugs."; }
+    if (guess=='parakeet') return "(“parakeet” is dialectal so I'm not sure which bird(s) you mean, exactly.)";
     if (guess=='house spider') {
         queue_trivium("The term “house spider” can refer to <a href=https://en.wikipedia.org/wiki/House_spider>multiple kinds of spider</a>, but it has <a href=extras/praiſe_of_the_houſe_Spider>a single entry in a 1600s bestiary that goes on and on about its wondrous beauty.</a>.");
     }
@@ -243,9 +245,12 @@ function equivalence_egg_message(guess, guess_id) {
     if (guess_id == 'Q10856' && (guess=='dove' || guess=='pigeon') && guesses.includes('dove') && guesses.includes('pigeon')) {
         return "Pigeons and doves are basically the same. They share a Wikipedia page.";
     }
-    if (guess_id == 'Q18099' && (guess='bison' || guess=='buffalo') && guesses.includes('bison') && guesses.includes('buffalo')) {
+    if (guess_id == 'Q18099' && (guess=='bison' || guess=='buffalo') && guesses.includes('bison') && guesses.includes('buffalo')) {
         queue_trivium_once("You might argue this game should interpret “bison” as <a href=https://en.wikipedia.org/wiki/Bison><i>Bison bison</i>, aka the American buffalo</a>, and interpret “buffalo” as <a href=https://en.wikipedia.org/wiki/True_buffalo><i>true</i> buffalo</a>, but since the American (and <a href=https://en.wikipedia.org/wiki/European_bison>European</a>) bison are colloquially known as “buffalo”, I think it's fair to treat them as interchangable terms. So anyone wanting points for buffalo has to name a specific one, like the African buffalo or dwarf buffalo or water buffalo.");
         return "Sorry, but “buffalo” and “bison” have been interchanged for centuries.";
+    }
+    if (guess=='parakeet' && guesses.includes('parrot')) {
+        return "(Sorry, “parakeet” is dialectal so I'm not sure which bird(s) you mean.)";
     }
     if (guess_id==LOWER_TITLE_TO_ID.dog && (!guesses.slice(0,-1).includes(guess) || !DOGS_IS_THE_SAME[0])) {
         if (dog_index > 3) { h1.innerText = "list animals OTHER THAN DOGS"; }
@@ -276,8 +281,14 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
     if (descendant_id=='Q221612' && ancestor_id=='Q9482') {
         return "(Groundhogs are marmots, which are ground squirrels, which are squirrels.)";
     }
+    if (descendant_id=='Q30359' && ancestor_id=='Q9482') {
+        return "(Prairie dogs are ground squirrels.)";
+    }
+    if (descendant_id==LOWER_TITLE_TO_ID.marmot && ancestor_id==LOWER_TITLE_TO_ID.squirrel) {
+        return "(Marmots are large ground squirrels.)";
+    }
     if (descendant_id==LOWER_TITLE_TO_ID.chipmunk && ancestor_id==LOWER_TITLE_TO_ID.squirrel) {
-        return "(Chipmunks are squirrels.)";
+        return "(Yes, chipmunks are squirrels.)";
     }
     if (descendant_id==LOWER_TITLE_TO_ID.snail && ancestor_id==LOWER_TITLE_TO_ID.slug) {
         return "(The snail/slug line is blurry.)";
@@ -285,6 +296,11 @@ function ancestry_egg_message(guess, descendant_id, ancestor_id) {
     if (descendant_id==LOWER_TITLE_TO_ID.termite && ancestor_id==LOWER_TITLE_TO_ID.roach) {
         return "(It's arguable, but Wikipedia calls termites “a group of detritophagous eusocial cockroaches”.)";
     }
+    if (descendant_id==LOWER_TITLE_TO_ID.rattlesnake && ancestor_id==LOWER_TITLE_TO_ID.viper) {
+        return "(Rattlesnakes are pit vipers.)";
+    }
+    if (descendant_id==LOWER_TITLE_TO_ID.elk && ancestor_id==LOWER_TITLE_TO_ID.deer) return "(Yes, elk are deer.)";
+    if (descendant_id==LOWER_TITLE_TO_ID.moose && ancestor_id==LOWER_TITLE_TO_ID.deer) return "(Yes, moose are deer.)";
     //if (descendant_id=='Q727919' && ancestor_id=='Q83902') {
     //    return "(Some katydids have been called long-horned grasshoppers.)";
     //}
@@ -340,16 +356,20 @@ function queue_final_trivia() {
     if (guessed_ids.includes('Q26972265') && guessed_ids.includes('Q38584')) {
         queue_trivium_once("You listed both dingos and dogs, so I gave you the benefit of the doubt, but <a href=https://en.wikipedia.org/wiki/Dingo#Taxonomy>there's disagreement on whether the dingo is its own species of canid, a subspecies of grey wolf, or simply a breed of dog.</a>");
     }
-    if (!trivia.innerText && Math.random() < .5) {
-        try_queue_pic_for(guessed_ids[guessed_ids.length-1]);
-    }
     if (!trivia.innerText && shy_trivia[0]) {
         queue_trivium_once(shy_trivia.pop());
     }
     shy_trivia = [];
+    if (!trivia.innerText) {
+        try_queue_pic_for(guessed_ids[0]);
+        if (try_queue_pic_for(guessed_ids[guessed_ids.length-1])) return;
+        for (let i=guessed_ids.length; i > 0; i--) {
+            if (try_queue_pic_for(guessed_ids[i]) || Math.random() > 0.9) break;
+        }
+    }
     if (
         !trivia.innerText // No trivia so far
-        && score > 1 // Enough guesses to criticize
+        && score > 9 // Enough guesses to criticize
         && guessed_descendant[LOWER_TITLE_TO_ID.bird] && guessed_descendant[LOWER_TITLE_TO_ID.insect] // Doesn't seem to be a challenge run like "only name birds"
     ) {
         for (common_id of COMMONS) {
@@ -365,8 +385,9 @@ function queue_final_trivia() {
 
 function try_queue_pic_for(guess_id) {
     let pics = ID_TO_PICS[guess_id];
-    if (pics) {
-        return queue_pic_once(choice(pics));
+    if (!pics) return;
+    for (pic of pics) {
+        if (queue_pic_once(pic)) return 1;
     }
 }
 
@@ -378,7 +399,7 @@ function queue_pic_once(pic) {
     const details = document.createElement('details');
     const summary = document.createElement('summary');
     details.append(summary);
-    summary.innerText = 'Photo of ' + (pic.title || pic.alt)
+    summary.innerText = 'photo of ' + (pic.title || pic.alt)
     const img = document.createElement('img');
     img.setAttribute('src', pic.src);
     img.setAttribute('alt', pic.alt);
