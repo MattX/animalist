@@ -212,6 +212,9 @@ body:has(#log li) #settings-page { /* hide settings during game */
     & summary { font-size: small }
 }
 #phylogeny {
+    max-width: 35em;
+    margin-left: auto;
+    margin-right: auto;
     #treeoflife {
         text-align: left;
         font-size: small;
@@ -384,6 +387,8 @@ function newGame() {
     endTime = undefined;
     log.innerText = '';
     mistakeslog.innerText = '';
+    treeoflife.innerHTML = '';
+    phylogeny.style.display = 'none';
     guessbox.value = '';
     guessbox.disabled = null;
     h1.style = '';
@@ -549,7 +554,8 @@ function attempt() {
         egg_manipulate_li(li, guess, guess_id);
         progress_egg();
         log.prepend(li);
-        
+        displayTreeOfLife();
+
         // Update UI.
         guessbox.value='';
         scorespan.innerText = score;
@@ -855,9 +861,6 @@ function load() {
             <button id=copybutton onclick=copyToClipboard(shareString,copybutton)>copy emoji summary</button>
             <button id=epsybutton onclick=copyToClipboard(log.innerText,epsybutton)>copy list</button>
             <button onclick=newGame()>try again</button>
-            <details id=phylogeny><summary>tree of life</summary>
-                <div id=treeoflife></div>
-            </details>
             <details id=mistakes style=display:none><summary>mistakes</summary>
                 <ul id=mistakeslog></ul>
                 <p>(If they're my fault, check Wikipedia & <a href=https://rose.systems/contact target=_blank>tell me what to fix</a>.)</p>
@@ -879,6 +882,9 @@ function load() {
         <input id=guessbox autofocus autocomplete=off onkeydown="if(event.key==`Enter`){attempt()}" oninput=uncomment()>
     </solar-system>
     <ul id=log></ul>
+    <details id=phylogeny style=display:none><summary>tree of life</summary>
+        <div id=treeoflife></div>
+    </details>
     <!--</div>-->
     
     <div id=spider aria-hidden>🕷️</div>
